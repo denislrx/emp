@@ -222,8 +222,9 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 function nextId()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $findNextId = "SELECT Max(NoEmp) FROM EMP2;";
-    $result = $bdd->query($findNextId);
+    $stmt = $bdd->prepare("SELECT Max(NoEmp) FROM EMP2;");
+    $stmt->execute();
+    $result = $stmt->get_result();
     $data = $result->fetch_array(MYSQLI_NUM);
     $result->free();
     $bdd->close();
@@ -234,27 +235,31 @@ function nextId()
 function insertion($tab, $id, $com)
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $insert = " INSERT INTO EMP2(NoEmp, Nom, Prenom, Emploi, Sup, Embauche, Sal, Comm, NoServ, noproj) 
-    VALUES( 
-    " . $id . ",
-    '" . $tab["nomPersonne"] . "',
-    '" . $tab["prenomPersonne"] . "',
-    '" . $tab["Emploi"] . "',
-    " . $tab["Superieur"] . ",
-    '" . $tab["Embauche"] . "',
-    " . $tab["Salaire"] . ",
-    '" . $com . "',
-    " . $tab["Service"] . ",
-    " . $tab["Projet"] . " );";
-    $bdd->query($insert);
+    $stmt = $bdd->prepare(" INSERT INTO EMP2(NoEmp, Nom, Prenom, Emploi, Sup, Embauche, Sal, Comm, NoServ, noproj) 
+    VALUES(?,?,?,?,?,?,?,?,?,?);");
+    $stmt->bind_param(
+        "isssisddii",
+        $id,
+        $tab["nomPersonne"],
+        $tab["prenomPersonne"],
+        $tab["Emploi"],
+        $tab["Superieur"],
+        $tab["Embauche"],
+        $tab["Salaire"],
+        $com,
+        $tab["Service"],
+        $tab["Projet"]
+    );
+    $stmt->execute();
     $bdd->close();
 }
 
 function selectAllServ()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $requete = "SELECT * from Serv2";
-    $result = $bdd->query($requete);
+    $stmt = $bdd->prepare("SELECT * from Serv2");
+    $stmt->execute();
+    $result = $stmt->get_result();
     $tabServ = $result->fetch_all(MYSQLI_ASSOC);
     $result->free();
     $bdd->close();
@@ -264,8 +269,9 @@ function selectAllServ()
 function selectAllProj()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $requete = "SELECT * from PROJ";
-    $result = $bdd->query($requete);
+    $stmt = $bdd->prepare("SELECT * from PROJ");
+    $stmt->execute();
+    $result = $stmt->get_result();
     $tabProj = $result->fetch_all(MYSQLI_ASSOC);
     $result->free();
     $bdd->close();

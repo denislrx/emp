@@ -65,8 +65,11 @@ if (!empty($_POST)) {
 function searchByName($name)
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $verifMdP = "SELECT * FROM user WHERE Nom = '" . $name . "';";
-    $result = $bdd->query($verifMdP);
+
+    $stmt = $bdd->prepare("SELECT * FROM user WHERE Nom = ?;");
+    $stmt->bind_param("i", $name);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $dataUser = $result->fetch_array(MYSQLI_ASSOC);
     $result->free();
     $bdd->close();

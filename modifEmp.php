@@ -222,25 +222,39 @@ function selectAllById($id)
 function UpdateALine($tab, $id)
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $update = " UPDATE EMP2 SET 
-Nom = '" . $tab["nomPersonne"] . "', 
-Prenom = '" . $tab["prenomPersonne"] . "', 
-Emploi = '" . $tab["Emploi"] . "', 
-Sup = '" . $tab["Superieur"] . "', 
-Embauche = '" . $tab["Embauche"] . "', 
-Sal = '" . $tab["Salaire"] . "', 
-Comm = '" . $tab["Commission"] . "', 
-NoServ = '" . $tab["IdService"] . "', 
-noproj = '" . $tab["IdProjet"] . "' WHERE NoEmp = '" . $id . "';";
-    $bdd->query($update);
+    $stmt = $bdd->prepare(" UPDATE EMP2 SET 
+    Nom = ?, 
+    Prenom = ?, 
+    Emploi = ?, 
+    Sup = ?, 
+    Embauche = ?, 
+    Sal = ?, 
+    Comm = ?, 
+    NoServ = ?, 
+    noproj = ? WHERE NoEmp = ?;");
+    $stmt->bind_param(
+        "sssisddiii",
+        $tab["nomPersonne"],
+        $tab["prenomPersonne"],
+        $tab["Emploi"],
+        $tab["Superieur"],
+        $tab["Embauche"],
+        $tab["Salaire"],
+        $tab["Commission"],
+        $tab["IdService"],
+        $tab["IdProjet"],
+        $id
+    );
+    $stmt->execute();
     mysqli_close($bdd);
 }
 
 function selectAllServ()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $requete = "SELECT * from Serv2";
-    $result = $bdd->query($requete);
+    $stmt = $bdd->prepare("SELECT * from Serv2");
+    $stmt->execute();
+    $result = $stmt->get_result();
     $tabServ = $result->fetch_all(MYSQLI_ASSOC);
     $result->free();
     $bdd->close();
@@ -250,8 +264,9 @@ function selectAllServ()
 function selectAllProj()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $requete = "SELECT * from PROJ";
-    $result = $bdd->query($requete);
+    $stmt = $bdd->prepare("SELECT * from PROJ");
+    $stmt->execute();
+    $result = $stmt->get_result();
     $tabProj = $result->fetch_all(MYSQLI_ASSOC);
     $result->free();
     $bdd->close();

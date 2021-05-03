@@ -98,7 +98,9 @@ $profil = $_SESSION["Profil"];
 function selectAll()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $result =  $bdd->query("SELECT * FROM EMP2;");
+    $stmt = $bdd->prepare("SELECT * FROM EMP2;");
+    $stmt->execute();
+    $result = $stmt->get_result();
     $data = $result->fetch_all(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
@@ -108,8 +110,9 @@ function selectAll()
 function counter()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $SaisieAuj = "SELECT COUNT(*) FROM EMP2 WHERE Saisie = DATE_FORMAT(SYSDATE(),'%Y-%m-%d');";
-    $compt = $bdd->query($SaisieAuj);
+    $stmt = $bdd->prepare("SELECT COUNT(*) FROM EMP2 WHERE Saisie = DATE_FORMAT(SYSDATE(),'%Y-%m-%d');");
+    $stmt->execute();
+    $compt = $stmt->get_result();
     $compteur = $compt->fetch_array(MYSQLI_NUM);
     mysqli_free_result($compt);
     $bdd->close();
@@ -119,8 +122,9 @@ function counter()
 function listChef()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $NoChef = "SELECT DISTINCT Sup FROM EMP2;";
-    $a = $bdd->query($NoChef);
+    $stmt = $bdd->prepare("SELECT DISTINCT Sup FROM EMP2;");
+    $stmt->execute();
+    $a = $stmt->get_result();
     $tabNoEmpChef = $a->fetch_all(MYSQLI_ASSOC);
     $a->free();
     $bdd->close();
@@ -130,8 +134,9 @@ function listChef()
 function detailChef()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $NomSup = " SELECT NoEmp, Nom, Prenom FROM EMP2 WHERE NoEmp IN (SELECT DISTINCT Sup FROM EMP2);";
-    $chef = $bdd->query($NomSup);
+    $stmt = $bdd->prepare(" SELECT NoEmp, Nom, Prenom FROM EMP2 WHERE NoEmp IN (SELECT DISTINCT Sup FROM EMP2);");
+    $stmt->execute();
+    $chef = $stmt->get_result();
     $tabChef = $chef->fetch_all(MYSQLI_ASSOC);
     $chef->free();
     $bdd->close();
