@@ -112,7 +112,7 @@ function counter()
     $compt = $bdd->query($SaisieAuj);
     $compteur = $compt->fetch_array(MYSQLI_NUM);
     mysqli_free_result($compt);
-    mysqli_close($bdd);
+    $bdd->close();
     return $compteur;
 }
 
@@ -122,8 +122,8 @@ function listChef()
     $NoChef = "SELECT DISTINCT Sup FROM EMP2;";
     $a = $bdd->query($NoChef);
     $tabNoEmpChef = $a->fetch_all(MYSQLI_ASSOC);
-    mysqli_free_result($a);
-    mysqli_close($bdd);
+    $a->free();
+    $bdd->close();
     return $tabNoEmpChef;
 }
 
@@ -133,8 +133,8 @@ function detailChef()
     $NomSup = " SELECT NoEmp, Nom, Prenom FROM EMP2 WHERE NoEmp IN (SELECT DISTINCT Sup FROM EMP2);";
     $chef = $bdd->query($NomSup);
     $tabChef = $chef->fetch_all(MYSQLI_ASSOC);
-    mysqli_free_result($chef);
-    mysqli_close($bdd);
+    $chef->free();
+    $bdd->close();
     return $tabChef;
 }
 ?>

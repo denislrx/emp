@@ -221,21 +221,19 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 <?php
 function nextId()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $findNextId = "SELECT Max(NoEmp) FROM EMP2;";
-    $result = mysqli_query($bdd, $findNextId);
-    $data = mysqli_fetch_array($result, MYSQLI_NUM);
-    mysqli_free_result($result);
-    mysqli_close($bdd);
+    $result = $bdd->query($findNextId);
+    $data = $result->fetch_array(MYSQLI_NUM);
+    $result->free();
+    $bdd->close();
     $NextId = $data[0] + 1;
     return $NextId;
 }
 
 function insertion($tab, $id, $com)
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $insert = " INSERT INTO EMP2(NoEmp, Nom, Prenom, Emploi, Sup, Embauche, Sal, Comm, NoServ, noproj) 
     VALUES( 
     " . $id . ",
@@ -248,29 +246,29 @@ function insertion($tab, $id, $com)
     '" . $com . "',
     " . $tab["Service"] . ",
     " . $tab["Projet"] . " );";
-    mysqli_query($bdd, $insert);
-    mysqli_close($bdd);
+    $bdd->query($insert);
+    $bdd->close();
 }
 
 function selectAllServ()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $requete = "SELECT * from Serv2";
-    $result = mysqli_query($bdd, $requete);
-    $tabServ = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    mysqli_close($bdd);
+    $result = $bdd->query($requete);
+    $tabServ = $result->fetch_all(MYSQLI_ASSOC);
+    $result->free();
+    $bdd->close();
     return $tabServ;
 }
 
 function selectAllProj()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $requete = "SELECT * from PROJ";
-    $result = mysqli_query($bdd, $requete);
-    $tabProj = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    mysqli_close($bdd);
+    $result = $bdd->query($requete);
+    $tabProj = $result->fetch_all(MYSQLI_ASSOC);
+    $result->free();
+    $bdd->close();
     return $tabProj;
 }
 

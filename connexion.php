@@ -68,8 +68,8 @@ function searchByName($name)
     $verifMdP = "SELECT * FROM user WHERE Nom = '" . $name . "';";
     $result = $bdd->query($verifMdP);
     $dataUser = $result->fetch_array(MYSQLI_ASSOC);
-    mysqli_free_result($result);
-    mysqli_close($bdd);
+    $result->free();
+    $bdd->close();
     return $dataUser;
 }
 ?>

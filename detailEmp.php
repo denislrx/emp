@@ -76,8 +76,8 @@ function showDetailById($id)
     $requete = "SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =" . $id . ";";
     $result = $bdd->query($requete);
     $data = $result->fetch_array(MYSQLI_ASSOC);
-    mysqli_free_result($result);
-    mysqli_close($bdd);
+    $result->free();
+    $bdd->close();
     return $data;
 }
 ?>

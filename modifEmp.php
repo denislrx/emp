@@ -238,23 +238,23 @@ noproj = '" . $tab["IdProjet"] . "' WHERE NoEmp = '" . $id . "';";
 
 function selectAllServ()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $requete = "SELECT * from Serv2";
-    $result = mysqli_query($bdd, $requete);
-    $tabServ = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    mysqli_close($bdd);
+    $result = $bdd->query($requete);
+    $tabServ = $result->fetch_all(MYSQLI_ASSOC);
+    $result->free();
+    $bdd->close();
     return $tabServ;
 }
 
 function selectAllProj()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $requete = "SELECT * from PROJ";
-    $result = mysqli_query($bdd, $requete);
-    $tabProj = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    mysqli_close($bdd);
+    $result = $bdd->query($requete);
+    $tabProj = $result->fetch_all(MYSQLI_ASSOC);
+    $result->free();
+    $bdd->close();
     return $tabProj;
 }
 ?>

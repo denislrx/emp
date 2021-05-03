@@ -108,9 +108,9 @@ function NextId()
     $findNextId = "SELECT Max(IdUser) FROM user;";
     $result = $bdd->query($findNextId);
     $data = $result->fetch_array(MYSQLI_NUM);
-    mysqli_free_result($result);
+    $result->free();
     $NextId = $data[0] + 1;
-    mysqli_close($bdd);
+    $bdd->close();
     return $NextId;
 }
 function listeNom()
@@ -119,8 +119,8 @@ function listeNom()
     $nomUnique = "SELECT DISTINCT Nom from user;";
     $result = $bdd->query($nomUnique);
     $tabNom = $result->fetch_array(MYSQLI_ASSOC);
-    mysqli_free_result($result);
-    mysqli_close($bdd);
+    $result->free();
+    $bdd->close();
     return  $tabNom;
 }
 
@@ -132,6 +132,6 @@ function insertion($id, $nom, $mdp)
         '" . $nom . "', 
         '" . $mdp . "' );";
     $bdd->query($insert);
-    mysqli_close($bdd);
+    $bdd->close();
 }
 ?>
