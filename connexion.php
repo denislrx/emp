@@ -4,8 +4,7 @@ $erreur = false;
 if (!empty($_POST)) {
 
 
-    $datUser = searchByName($_POST["Nom"]);
-
+    $dataUser = searchByName($_POST["Nom"]);
 
     if (password_verify($_POST["MDP"], $dataUser["MDP"])) {
         session_start();
