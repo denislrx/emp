@@ -64,11 +64,10 @@ if (!empty($_POST)) {
 <?php
 function searchByName($name)
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $verifMdP = "SELECT * FROM user WHERE Nom = '" . $name . "';";
-    $result = mysqli_query($bdd, $verifMdP);
-    $dataUser = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    $result = $bdd->query($verifMdP);
+    $dataUser = $result->fetch_array(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
     return $dataUser;

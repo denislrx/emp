@@ -159,12 +159,9 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                 <label class="col-sm" for="service">Service</label>
                 <select class="col-sm" name="IdService">
                     <?php
-                    $bdd = mysqli_init();
-                    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
-                    $requete = "SELECT * from Serv2";
-                    $result = mysqli_query($bdd, $requete);
-                    $tabServ = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                    mysqli_free_result($result);
+
+                    $tabServ = selectAllServ();
+
 
 
                     for ($i = 0; $i < sizeof($tabServ); $i++) {
@@ -184,13 +181,7 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                 <label class="col-sm" for="projet">Projet</label>
                 <select class="col-sm" name="IdProjet">
                     <?php
-                    $bdd = mysqli_init();
-                    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
-                    $requete = "SELECT * from PROJ";
-                    $result = mysqli_query($bdd, $requete);
-                    $tabProj = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                    mysqli_free_result($result);
-
+                    $tabProj = selectAllProj();
 
                     for ($i = 0; $i < sizeof($tabProj); $i++) {
                     ?>
@@ -219,11 +210,10 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 <?php
 function selectAllById($id)
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $requete = "SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =" . $id . ";";
-    $result = mysqli_query($bdd, $requete);
-    $data = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    $result = $bdd->query($requete);
+    $data = $result->fetch_array(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
     return $data;
@@ -231,8 +221,7 @@ function selectAllById($id)
 
 function UpdateALine($tab, $id)
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $update = " UPDATE EMP2 SET 
 Nom = '" . $tab["nomPersonne"] . "', 
 Prenom = '" . $tab["prenomPersonne"] . "', 
@@ -243,7 +232,29 @@ Sal = '" . $tab["Salaire"] . "',
 Comm = '" . $tab["Commission"] . "', 
 NoServ = '" . $tab["IdService"] . "', 
 noproj = '" . $tab["IdProjet"] . "' WHERE NoEmp = '" . $id . "';";
-    mysqli_query($bdd, $update);
+    $bdd->query($update);
     mysqli_close($bdd);
+}
+
+function selectAllServ()
+{
+    $bdd = mysqli_init();
+    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $requete = "SELECT * from Serv2";
+    $result = mysqli_query($bdd, $requete);
+    $tabServ = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_close($bdd);
+    return $tabServ;
+}
+
+function selectAllProj()
+{
+    $bdd = mysqli_init();
+    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $requete = "SELECT * from PROJ";
+    $result = mysqli_query($bdd, $requete);
+    $tabProj = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    mysqli_close($bdd);
+    return $tabProj;
 }
 ?>

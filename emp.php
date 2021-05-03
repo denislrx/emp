@@ -97,10 +97,9 @@ $profil = $_SESSION["Profil"];
 <?php
 function selectAll()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
-    $result = mysqli_query($bdd, "SELECT * FROM EMP2;");
-    $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+    $result =  $bdd->query("SELECT * FROM EMP2;");
+    $data = $result->fetch_all(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
     return $data;
@@ -108,11 +107,10 @@ function selectAll()
 
 function counter()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $SaisieAuj = "SELECT COUNT(*) FROM EMP2 WHERE Saisie = DATE_FORMAT(SYSDATE(),'%Y-%m-%d');";
-    $compt = mysqli_query($bdd, $SaisieAuj);
-    $compteur = mysqli_fetch_array($compt, MYSQLI_NUM);
+    $compt = $bdd->query($SaisieAuj);
+    $compteur = $compt->fetch_array(MYSQLI_NUM);
     mysqli_free_result($compt);
     mysqli_close($bdd);
     return $compteur;
@@ -120,11 +118,10 @@ function counter()
 
 function listChef()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $NoChef = "SELECT DISTINCT Sup FROM EMP2;";
-    $a = mysqli_query($bdd, $NoChef);
-    $tabNoEmpChef = mysqli_fetch_all($a, MYSQLI_ASSOC);
+    $a = $bdd->query($NoChef);
+    $tabNoEmpChef = $a->fetch_all(MYSQLI_ASSOC);
     mysqli_free_result($a);
     mysqli_close($bdd);
     return $tabNoEmpChef;
@@ -132,11 +129,10 @@ function listChef()
 
 function detailChef()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $NomSup = " SELECT NoEmp, Nom, Prenom FROM EMP2 WHERE NoEmp IN (SELECT DISTINCT Sup FROM EMP2);";
-    $chef = mysqli_query($bdd, $NomSup);
-    $tabChef = mysqli_fetch_all($chef, MYSQLI_ASSOC);
+    $chef = $bdd->query($NomSup);
+    $tabChef = $chef->fetch_all(MYSQLI_ASSOC);
     mysqli_free_result($chef);
     mysqli_close($bdd);
     return $tabChef;

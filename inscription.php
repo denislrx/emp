@@ -104,11 +104,10 @@ if (!empty($_POST)) {
 
 function NextId()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $findNextId = "SELECT Max(IdUser) FROM user;";
-    $result = mysqli_query($bdd, $findNextId);
-    $data = mysqli_fetch_array($result, MYSQLI_NUM);
+    $result = $bdd->query($findNextId);
+    $data = $result->fetch_array(MYSQLI_NUM);
     mysqli_free_result($result);
     $NextId = $data[0] + 1;
     mysqli_close($bdd);
@@ -116,11 +115,10 @@ function NextId()
 }
 function listeNom()
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $nomUnique = "SELECT DISTINCT Nom from user;";
-    $result = mysqli_query($bdd, $nomUnique);
-    $tabNom = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    $result = $bdd->query($nomUnique);
+    $tabNom = $result->fetch_array(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
     return  $tabNom;
@@ -128,13 +126,12 @@ function listeNom()
 
 function insertion($id, $nom, $mdp)
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $insert = "INSERT INTO user(IdUser, Nom, MDP) VALUE(
         " . $id . ",
         '" . $nom . "', 
         '" . $mdp . "' );";
-    mysqli_query($bdd, $insert);
+    $bdd->query($insert);
     mysqli_close($bdd);
 }
 ?>

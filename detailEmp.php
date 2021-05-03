@@ -72,11 +72,10 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 <?php
 function showDetailById($id)
 {
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
     $requete = "SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =" . $id . ";";
-    $result = mysqli_query($bdd, $requete);
-    $data = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    $result = $bdd->query($requete);
+    $data = $result->fetch_array(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
     return $data;
