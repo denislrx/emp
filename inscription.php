@@ -105,7 +105,7 @@ if (!empty($_POST)) {
 function NextId()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT Max(IdUser) FROM user;");
+    $stmt = $bdd->prepare("SELECT Max(IdUser) FROM user");
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_array(MYSQLI_NUM);

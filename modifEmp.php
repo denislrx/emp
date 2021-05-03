@@ -211,8 +211,10 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 function selectAllById($id)
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $requete = "SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =" . $id . ";";
-    $result = $bdd->query($requete);
+    $stmt = $bdd->prepare("SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =?;");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $data = $result->fetch_array(MYSQLI_ASSOC);
     mysqli_free_result($result);
     mysqli_close($bdd);
@@ -252,7 +254,7 @@ function UpdateALine($tab, $id)
 function selectAllServ()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from Serv2");
+    $stmt = $bdd->prepare("SELECT * from Serv2;");
     $stmt->execute();
     $result = $stmt->get_result();
     $tabServ = $result->fetch_all(MYSQLI_ASSOC);
@@ -264,7 +266,7 @@ function selectAllServ()
 function selectAllProj()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from PROJ");
+    $stmt = $bdd->prepare("SELECT * from PROJ;");
     $stmt->execute();
     $result = $stmt->get_result();
     $tabProj = $result->fetch_all(MYSQLI_ASSOC);

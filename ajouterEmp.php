@@ -257,7 +257,7 @@ function insertion($tab, $id, $com)
 function selectAllServ()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from Serv2");
+    $stmt = $bdd->prepare("SELECT * from Serv2;");
     $stmt->execute();
     $result = $stmt->get_result();
     $tabServ = $result->fetch_all(MYSQLI_ASSOC);
@@ -269,7 +269,7 @@ function selectAllServ()
 function selectAllProj()
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from PROJ");
+    $stmt = $bdd->prepare("SELECT * from PROJ;");
     $stmt->execute();
     $result = $stmt->get_result();
     $tabProj = $result->fetch_all(MYSQLI_ASSOC);

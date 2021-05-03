@@ -6,6 +6,7 @@ if (!empty($_POST)) {
 
     $dataUser = searchByName($_POST["Nom"]);
 
+
     if (password_verify($_POST["MDP"], $dataUser["MDP"])) {
         session_start();
         $_SESSION["Nom"] = $dataUser["Nom"];
@@ -65,9 +66,8 @@ if (!empty($_POST)) {
 function searchByName($name)
 {
     $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-
     $stmt = $bdd->prepare("SELECT * FROM user WHERE Nom = ?;");
-    $stmt->bind_param("i", $name);
+    $stmt->bind_param("s", $name);
     $stmt->execute();
     $result = $stmt->get_result();
     $dataUser = $result->fetch_array(MYSQLI_ASSOC);

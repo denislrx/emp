@@ -5,10 +5,17 @@
 
 if (isset($_GET["id"])) {
 
-    $bdd = mysqli_init();
-    mysqli_real_connect($bdd, "localhost", "root", "", "personnel_bdd");
-    $delete = "DELETE FROM  emp2 WHERE NoEmp =" . $_GET["id"] . ";";
-    mysqli_query($bdd, $delete);
+    deleteLine($_GET["id"]);
 }
 
 header("location:emp.php");
+
+function deleteLine($id)
+{
+
+    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+    $stmt = $bdd->prepare("DELETE FROM  emp2 WHERE NoEmp =?;");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $bdd->close();
+}
