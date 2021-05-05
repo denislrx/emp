@@ -19,7 +19,9 @@ $profil = $_SESSION["Profil"];
 <body>
     <?php
 
-    $data = selectAll();
+    include_once("DAO/EmployeDAO.php");
+
+    $data->selectAll();
     ?>
     <div class="container">
         <div class="row">
@@ -93,53 +95,3 @@ $profil = $_SESSION["Profil"];
 </body>
 
 </html>
-
-<?php
-function selectAll()
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * FROM EMP2;");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_all(MYSQLI_ASSOC);
-    mysqli_free_result($result);
-    mysqli_close($bdd);
-    return $data;
-}
-
-function counter()
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT COUNT(*) FROM EMP2 WHERE Saisie = DATE_FORMAT(SYSDATE(),'%Y-%m-%d');");
-    $stmt->execute();
-    $compt = $stmt->get_result();
-    $compteur = $compt->fetch_array(MYSQLI_NUM);
-    mysqli_free_result($compt);
-    $bdd->close();
-    return $compteur;
-}
-
-function listChef()
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT DISTINCT Sup FROM EMP2;");
-    $stmt->execute();
-    $a = $stmt->get_result();
-    $tabNoEmpChef = $a->fetch_all(MYSQLI_ASSOC);
-    $a->free();
-    $bdd->close();
-    return $tabNoEmpChef;
-}
-
-function detailChef()
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare(" SELECT NoEmp, Nom, Prenom FROM EMP2 WHERE NoEmp IN (SELECT DISTINCT Sup FROM EMP2);");
-    $stmt->execute();
-    $chef = $stmt->get_result();
-    $tabChef = $chef->fetch_all(MYSQLI_ASSOC);
-    $chef->free();
-    $bdd->close();
-    return $tabChef;
-}
-?>

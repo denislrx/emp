@@ -35,7 +35,7 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 
     if (isset($_GET["id"])) {
 
-        $data = selectAllById($_GET["id"]);
+        $data = showDetailById($_GET["id"]);
         // var_dump($_POST);
         // var_dump($_GET);
     }
@@ -206,72 +206,3 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 </body>
 
 </html>
-
-<?php
-function selectAllById($id)
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =?;");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_array(MYSQLI_ASSOC);
-    mysqli_free_result($result);
-    mysqli_close($bdd);
-    return $data;
-}
-
-function UpdateALine($tab, $id)
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare(" UPDATE EMP2 SET 
-    Nom = ?, 
-    Prenom = ?, 
-    Emploi = ?, 
-    Sup = ?, 
-    Embauche = ?, 
-    Sal = ?, 
-    Comm = ?, 
-    NoServ = ?, 
-    noproj = ? WHERE NoEmp = ?;");
-    $stmt->bind_param(
-        "sssisddiii",
-        $tab["nomPersonne"],
-        $tab["prenomPersonne"],
-        $tab["Emploi"],
-        $tab["Superieur"],
-        $tab["Embauche"],
-        $tab["Salaire"],
-        $tab["Commission"],
-        $tab["IdService"],
-        $tab["IdProjet"],
-        $id
-    );
-    $stmt->execute();
-    mysqli_close($bdd);
-}
-
-function selectAllServ()
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from Serv2;");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $tabServ = $result->fetch_all(MYSQLI_ASSOC);
-    $result->free();
-    $bdd->close();
-    return $tabServ;
-}
-
-function selectAllProj()
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * from PROJ;");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $tabProj = $result->fetch_all(MYSQLI_ASSOC);
-    $result->free();
-    $bdd->close();
-    return $tabProj;
-}
-?>

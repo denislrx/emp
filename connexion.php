@@ -63,16 +63,5 @@ if (!empty($_POST)) {
 </body>
 
 <?php
-function searchByName($name)
-{
-    $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-    $stmt = $bdd->prepare("SELECT * FROM user WHERE Nom = ?;");
-    $stmt->bind_param("s", $name);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $dataUser = $result->fetch_array(MYSQLI_ASSOC);
-    $result->free();
-    $bdd->close();
-    return $dataUser;
-}
+
 ?>
