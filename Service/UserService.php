@@ -1,5 +1,5 @@
 <?php
-include_once("DAO/UserDAO");
+include_once(__DIR__ . "/../DAO/UserDAO.php");
 
 class UserService
 {
@@ -25,5 +25,12 @@ class UserService
         $obj->setMDP($MDPHash);
         $userDAO = new UserDAO;
         $userDAO->insertion($obj);
+    }
+
+    public function nextId(): int
+    {
+        $obj = new UserDAO;
+        $nextId = $obj->NextId();
+        return $nextId;
     }
 }

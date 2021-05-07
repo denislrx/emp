@@ -1,5 +1,5 @@
 <?php
-include_once("model/projet.php");
+include_once(__DIR__ . "/../Model/Projet.php");
 
 class ProjetDAO
 {

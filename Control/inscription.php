@@ -1,18 +1,21 @@
 <?php
+
+include_once(__DIR__ . "/../Service/UserService.php");
+
 $erreur = false;
 $messageErreur = [];
-
+$objUser = new UserService;
 if (!empty($_POST)) {
 
 
-    $NextId = NextId();
+    $NextId = $objUser->nextId();
 
     if (!isset($_POST["Nom"]) || empty($_POST["Nom"])) {
         $erreur = true;
         $messageErreur[] = "Erreur de saisie du mot de passe ";
     } else {
 
-        $tabNom = listeNom();
+        $tabNom = $objUser->listeNom();
         foreach ($tabNom as $nom) {
             if ($_POST["Nom"] == $nom) {
                 $erreur = true;
@@ -40,8 +43,10 @@ if (!empty($_POST)) {
 
 
     if (!$erreur) {
-
-        insertion($NextId, $_POST["Nom"], $MDP);
+        $objProfil = new User;
+        $objProfil->setNom($_POST["Nom"]);
+        $objProfil->setMDP($_POST["MDP1"]);
+        $objUser->insertion($objProfil);
         header("location:connexion.php");
     }
 }

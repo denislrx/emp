@@ -1,6 +1,6 @@
 <?php
 
-include_once("Model/User.php");
+include_once(__DIR__ . "/../Model/User.php");
 
 class UserDAO
 {
@@ -36,7 +36,7 @@ class UserDAO
         return $NextId;
     }
 
-    // service?
+
     function listeNom()
     {
         $bdd = new mysqli("localhost", "root", "", "personnel_bdd");

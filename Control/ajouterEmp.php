@@ -1,4 +1,7 @@
 <?php
+include_once(__DIR__ . "/../Service/EmployeService.php");
+include_once(__DIR__ . "/../Service/ServiceService.php");
+include_once(__DIR__ . "/../Service/ProjetService.php");
 session_start();
 if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
     header("location: connexion.php");
@@ -83,17 +86,33 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 
         if (!$isThereError) {
 
+            $objService = new EmployeService;
+            $nextId = $objService->nextId();
 
-            $NextId = nextId();
 
-            if ($_POST["Commission"] == "") {
-                $CommNull = "null";
+
+            $sup = new Employe;
+            $objPost = new Employe;
+            $serv = new Service;
+            if (empty($_POST["Commission"])) {
+                $comm = null;
             } else {
-                $CommNull = $_POST["Commission"];
+                $comm = $_POST["Commission"];
             }
 
+            $objPost->setNoEmp($nextId);
+            $objPost->setNom($_POST["nomPersonne"]);
+            $objPost->setPrenom($_POST["prenomPersonne"]);
+            $objPost->setEmploi($_POST["Emploi"]);
+            $objPost->setSup($sup);
+            $sup->setNoEmp($_POST["Superieur"]);
+            $objPost->setEmbauche($_POST["Embauche"]);
+            $objPost->setSal($_POST["Salaire"]);
+            $objPost->setCom($comm);
+            $objPost->setService($serv);
+            $serv->setNoServ($_POST["Service"]);
 
-            insertion($_POST, $NextId, $CommNull);
+            $objService->insertion($objPost);
 
             header("location: emp.php");
         } else {
@@ -106,6 +125,13 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
             }
         }
     }
+
+    $objServ = new ServiceService;
+    $tabServ = $objServ->selectAllServ();
+    $objProj = new ProjetService;
+    $tabProj = $objProj->selectAllProj();
+
+
     ?>
 
     <form action="" method="post" name="formule">
@@ -178,17 +204,18 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                 <select class="col-sm" name="Service" ?>">
                     <?php
 
-                    $tabProj = selectAllServ();
 
-                    for ($i = 0; $i < sizeof($tabServ); $i++) {
+
+                    foreach ($tabServ as $value) {
                     ?>
-                        <option value="<?php echo $tabServ[$i]["NoServ"]; ?>"> <?php echo $tabServ[$i]["Serv"] ?></option>
+                        <option value="<?php echo $value->getNoServ(); ?>"> <?php echo $value->getServ() ?></option>
                     <?php
                     }
                     ?>
                 </select>
                 <br />
             </div>
+
 
 
             <div class="row">
@@ -196,11 +223,10 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                 <select class="col-sm" name="Projet" ?>">
                     <?php
 
-                    $tabProj = selectAllProj();
 
-                    for ($i = 0; $i < sizeof($tabProj); $i++) {
+                    foreach ($tabProj as $value) {
                     ?>
-                        <option value="<?php echo $tabProj[$i]["noproj"]; ?>"> <?php echo $tabProj[$i]["nomproj"] ?></option>
+                        <option value="<?php echo $value->getNoProj(); ?>"> <?php echo $value->getNomProj() ?></option>
                     <?php
                     }
                     ?>
@@ -210,7 +236,7 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
             </div>
 
             <div class="row">
-                <button type="submit">Modifier</button>
+                <button type="submit">Ajouter un nouvel employé</button>
             </div>
         </div>
     </form>

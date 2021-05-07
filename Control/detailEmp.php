@@ -1,4 +1,7 @@
 <?php
+
+include_once(__DIR__ . "/../Service/EmployeService.php");
+
 session_start();
 if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
     header("location: connexion.php");
@@ -19,8 +22,9 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 
 <body>
     <?php
+    $obj = new EmployeService;
     if (isset($_GET["id"])) {
-        $data = showDetailById($_GET["id"]);
+        $data = $obj->showDetailById($_GET["id"]);
     }
 
     ?>
@@ -40,21 +44,27 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                     <td> LIEU </td>
                     <td> PROJET </td>
                     <td> BUDGET </td>
-
+                    <?php
+                    if ($data->getSup() == null) {
+                        $sup = "";
+                    } else {
+                        $sup = $data->getSup()->getNom() . " " .  $data->getSup()->getPrenom();
+                    }
+                    ?>
                     <tr>
 
-                        <td> <?php echo $data["NoEmp"] ?></td>
-                        <td> <?php echo $data["Nom"] ?></td>
-                        <td> <?php echo $data["Prenom"] ?></td>
-                        <td> <?php echo $data["Emploi"] ?></td>
-                        <td> <?php echo $data["Sup"] ?></td>
-                        <td> <?php echo $data["Embauche"] ?></td>
-                        <td> <?php echo $data["Sal"] ?></td>
-                        <td> <?php echo $data["Comm"] ?></td>
-                        <td> <?php echo $data["Serv"] ?></td>
-                        <td> <?php echo $data["Ville"] ?></td>
-                        <td> <?php echo $data["nomproj"] ?></td>
-                        <td> <?php echo $data["budget"] ?></td>
+                        <td> <?php echo $data->getNoEmp() ?></td>
+                        <td> <?php echo $data->getNom() ?></td>
+                        <td> <?php echo $data->getPrenom() ?></td>
+                        <td> <?php echo $data->getEmploi() ?></td>
+                        <td> <?php echo $sup ?></td>
+                        <td> <?php echo $data->getEmbauche() ?></td>
+                        <td> <?php echo $data->getSal() ?></td>
+                        <td> <?php echo $data->getCom() ?></td>
+                        <td> <?php echo $data->getService()->getServ() ?></td>
+                        <td> <?php echo $data->getService()->getVille() ?></td>
+                        <td> <?php echo $data->getProjet()->getNomProj() ?></td>
+                        <td> <?php echo $data->getProjet()->getBudget() ?></td>
 
                     </tr>
                 </table>

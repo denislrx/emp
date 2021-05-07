@@ -1,4 +1,6 @@
 <?php
+include_once(__DIR__ . "/../Service/EmployeService.php");
+
 session_start();
 $profil = $_SESSION["Profil"];
 
@@ -19,18 +21,18 @@ $profil = $_SESSION["Profil"];
 <body>
     <?php
 
-    include_once("DAO/EmployeDAO.php");
+    $objService = new EmployeService;
+    $objSelectAll = $objService->selectAll();
 
-    $data->selectAll();
     ?>
     <div class="container">
         <div class="row">
             <div class="row">
 
                 <?php
-                $compteur = counter();
+                $compteur = $objService->counter();
                 ?>
-                <div class="label"> Nombre de lignes insérées aujourd'hui : <?php echo $compteur[0] ?></div>
+                <div class="label"> Nombre de lignes insérées aujourd'hui : <?php echo $compteur ?></div>
                 <div><a href='deconnexion.php'> <button class="btn btn-dark"> Déconnexion </a></div>
             </div>
             <table>
@@ -45,46 +47,42 @@ $profil = $_SESSION["Profil"];
                     <td> Supprimer </td>
                 <?php }
 
-                $tabChef = detailChef();
+                $tabChef = $objService->detailChef();
 
-                $tableau = [];
-                $tabNoEmpChef = listChef();
+                // $tableau = [];
+                $tabNoEmpChef = $objService->listChef();
 
                 for ($h = 0; $h < sizeof($tabNoEmpChef); $h++) {
                     $tableau[$h] = $tabNoEmpChef[$h]["Sup"];
                 }
 
+                foreach ($objSelectAll as $value) {
 
-
-                for ($i = 0; $i < sizeof($data); $i++) {
-                    $nom = $data[$i]["Nom"];
-                    $prenom = $data[$i]["Prenom"];
-                    $emploi = $data[$i]["Emploi"];
-                    for ($j = 0; $j < sizeof($tabChef); $j++) {
-                        if (is_null($data[$i]["Sup"])) {
-                            $sup = "";
-                        } else if ($tabChef[$j]["NoEmp"] == $data[$i]["Sup"]) {
-                            $sup = $tabChef[$j]["Nom"] . " " . $tabChef[$j]["Prenom"];
-                        }
+                    if ($value->getSup() == null) {
+                        $sup = "";
+                    } else {
+                        $sup = $value->getSup()->getNom() . " " . $value->getSup()->getPrenom();
                     }
 
-
                 ?>
-
                     <tr>
-                        <td> <?php echo $nom ?></td>
-                        <td> <?php echo $prenom ?></td>
-                        <td> <?php echo $emploi ?></td>
-                        <td> <?php echo $sup ?></td>
+                        <td> <?php echo $value->getNom() ?></td>
+                        <td> <?php echo $value->getPrenom() ?></td>
+                        <td> <?php echo $value->getEmploi() ?></td>
+                        <td> <?php echo $sup  ?></td>
                         <?php if ($profil == "admin") { ?>
-                            <td> <a href='detailEmp.php?id=<?php echo $data[$i]["NoEmp"] ?>'><button class="btn btn-primary"> Détail </button></a></td>
-                            <td> <a href='modifEmp.php?id=<?php echo $data[$i]["NoEmp"] ?>'><button class="btn btn-warning"> Modifier </button></a></td>
-                            <td> <?php if (!in_array($data[$i]["NoEmp"], $tableau)) { ?> <a href='suppEmp.php?id=<?php echo $data[$i]["NoEmp"] ?>'><button class="btn btn-danger"> Supprimer </button></a> <?php } ?> </td>
+                            <td> <a href='detailEmp.php?id=<?php echo $value->GetNoEmp() ?>'><button class="btn btn-primary"> Détail </button></a></td>
+                            <td> <a href='modifEmp.php?id=<?php echo $value->GetNoEmp() ?>'><button class="btn btn-warning"> Modifier </button></a></td>
+                            <td> <?php if (!in_array($value->GetNoEmp(), $tabNoEmpChef)) { ?> <a href='suppEmp.php?id=<?php echo $data[$i]["NoEmp"] ?>'><button class="btn btn-danger"> Supprimer </button></a> <?php } ?> </td>
                         <?php } ?>
                     </tr>
                 <?php
                 }
                 ?>
+
+
+
+
 
             </table>
             <?php if ($profil == "admin") { ?>

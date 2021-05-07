@@ -2,9 +2,9 @@
 
 class Service
 {
-    private $noServ;
-    private $serv;
-    private $ville;
+    protected $noServ;
+    protected $serv;
+    protected $ville;
 
 
 

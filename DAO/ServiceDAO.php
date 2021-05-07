@@ -1,5 +1,5 @@
 <?php
-include_once("model/service.php");
+include_once(__DIR__ . "/../Model/Service.php");
 
 class ServiceDAO
 {
@@ -13,14 +13,14 @@ class ServiceDAO
         $tabServ = $result->fetch_all(MYSQLI_ASSOC);
         $tabObjServ = [];
         foreach ($tabServ as $value) {
-            $Service = new Service;
-            $Service->setNoServ($value["NoServ"]);
-            $Service->setServ($value["Serv"]);
-            $Service->setVille($value["Ville"]);
-            $tabObjServ[] = $Service;
+            $service = new Service;
+            $service->setNoServ($value["NoServ"]);
+            $service->setServ($value["Serv"]);
+            $service->setVille($value["Ville"]);
+            $tabObjServ[] = $service;
         }
         $result->free();
         $bdd->close();
-        return $tabServ;
+        return $tabObjServ;
     }
 }

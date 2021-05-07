@@ -1,21 +1,21 @@
 <?php
 
-include_once("model/Service.php");
-include_once("model/Projet.php");
+include_once("Service.php");
+include_once("Projet.php");
 
 class Employe
 {
-    private $noEmp;
-    private $nom;
-    private $prenom;
-    private $emploi;
-    private $embauche;
-    private $sup;
-    private $sal;
-    private $com;
-    private Service $service;
-    private Projet $projet;
-    private $saisie;
+    protected $noEmp;
+    protected $nom;
+    protected $prenom;
+    protected $emploi;
+    protected $embauche;
+    protected ?Employe $sup;
+    protected $sal;
+    protected $com;
+    protected Service $service;
+    protected Projet $projet;
+    protected $saisie;
 
     /**
      * Get the value of noEmp
@@ -120,7 +120,7 @@ class Employe
     /**
      * Get the value of sup
      */
-    public function getSup(): int
+    public function getSup(): ?Employe
     {
         return $this->sup;
     }
@@ -130,7 +130,7 @@ class Employe
      *
      * @return  self
      */
-    public function setSup(int $sup)
+    public function setSup(?Employe $sup)
     {
         $this->sup = $sup;
 
@@ -160,7 +160,7 @@ class Employe
     /**
      * Get the value of com
      */
-    public function getCom(): float
+    public function getCom(): ?float
     {
         return $this->com;
     }
@@ -170,7 +170,7 @@ class Employe
      *
      * @return  self
      */
-    public function setCom(float $com)
+    public function setCom(?float $com)
     {
         $this->com = $com;
 

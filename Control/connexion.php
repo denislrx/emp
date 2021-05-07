@@ -1,16 +1,18 @@
 <?php
+include_once(__DIR__ . "/../Service/UserService.php");
 $erreur = false;
+$objUser = new UserService;
 
 if (!empty($_POST)) {
 
 
-    $dataUser = searchByName($_POST["Nom"]);
+    $dataUser = $objUser->searchByName($_POST["Nom"]);
 
 
-    if (password_verify($_POST["MDP"], $dataUser["MDP"])) {
+    if (password_verify($_POST["MDP"], $dataUser->getMdp())) {
         session_start();
-        $_SESSION["Nom"] = $dataUser["Nom"];
-        $_SESSION["Profil"] = $dataUser["Profil"];
+        $_SESSION["Nom"] = $dataUser->getNom();
+        $_SESSION["Profil"] = $dataUser->getProfil();
         header("location:emp.php");
     } else {
         $erreur = true;

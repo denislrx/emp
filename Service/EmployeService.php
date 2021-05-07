@@ -1,6 +1,6 @@
 <?php
 
-include_once("DAO/EmployesDAO");
+include_once(__DIR__ . "/../DAO/EmployeDAO.php");
 
 class EmployeService
 {
@@ -56,5 +56,12 @@ class EmployeService
         $obj = new EmployeDAO;
         $listChef = $obj->listChef();
         return $listChef;
+    }
+
+    public function nextId(): int
+    {
+        $obj = new EmployeDAO;
+        $nextId = $obj->NextId();
+        return $nextId;
     }
 }

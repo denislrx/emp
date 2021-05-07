@@ -1,37 +1,77 @@
 <?php
 
-include_once("Model/Employe.php");
+include_once(__DIR__ . "/../Model/Employe.php");
 
 class EmployeDAO
 {
 
+    function createTabObj($tab)
+    {
+        $tabObjEmp = [];
+        foreach ($tab as $value) {
+
+
+            $employe = new Employe();
+
+            if (!is_null($value["Sup"])) {
+                $sup = new Employe();
+                $sup->setNoEmp($value["NoEmpSup"]);
+                $sup->setNom($value["NomSup"]);
+                $sup->setPrenom($value["PrenomSup"]);
+                $employe->setSup($sup);
+            } else {
+                $employe->setSup(null);
+            }
+
+            $employe->setNoEmp($value["NoEmp"]);
+            $employe->setNom($value["Nom"]);
+            $employe->setPrenom($value["Prenom"]);
+            $employe->setEmploi($value["Emploi"]);
+            $employe->setEmbauche($value["Embauche"]);
+            $employe->setSal($value["Sal"]);
+            $employe->setCom($value["Comm"]);
+            $service = new Service();
+            $service->setNoServ($value["NoServ"]);
+            $service->setServ($value["Serv"]);
+            $service->setVille($value["Ville"]);
+            $employe->setService($service);
+            $projet = new Projet();
+            $projet->setNoProj($value["noproj"]);
+            $projet->setNomProj($value["nomproj"]);
+            $projet->setBudget($value["budget"]);
+            $employe->setProjet($projet);
+            $employe->setSaisie($value["Saisie"]);
+            $tabObjEmp[] = $employe;
+        }
+        return $tabObjEmp;
+    }
+
     function selectAll()
     {
         $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-        $stmt = $bdd->prepare("SELECT * FROM EMP2;");
+        $stmt = $bdd->prepare("SELECT e.*, s.*, p.*,
+        e2.NoEmp as NoEmpSup, 
+        e2.Nom as NomSup, 
+        e2.Prenom as PrenomSup 
+        from EMP2 as e 
+        left join EMP2 as e2 
+        on e.Sup = e2.NoEmp
+        inner join Serv2 as s 
+        on e.NoServ = s.NoServ 
+        inner join proj as p 
+        on e.NOPROJ = p.NOPROJ
+        ORDER BY e.NoEmp");
         $stmt->execute();
         $result = $stmt->get_result();
         $data = $result->fetch_all(MYSQLI_ASSOC);
-        $tabEmp = [];
-        foreach ($data as $value) {
-            $Employe = new Employe;
-            $Employe->setNoEmp($value["NoEmp"]);
-            $Employe->setNom($value["Nom"]);
-            $Employe->setPrenom($value["Prenom"]);
-            $Employe->setEmploi($value["Emploi"]);
-            $Employe->setSup($value["Sup"]);
-            $Employe->setEmbauche($value["Embauche"]);
-            $Employe->setSal($value["Sal"]);
-            $Employe->setCom($value["Comm"]);
-            $Employe->service->setNoServ($value["NoServ"]);
-            $Employe->projet->setNoProj($value["NOPROJ"]);
-            $Employe->setSaisie($value["Saisie"]);
-            $tabEmp[] = $Employe;
-        }
+        $objDAO = new EmployeDAO;
+        $tabEmp = $objDAO->createTabObj($data);
         mysqli_free_result($result);
         mysqli_close($bdd);
         return $tabEmp;
     }
+
+
 
     function insertion(Employe $obj)
     {
@@ -40,7 +80,7 @@ class EmployeDAO
         $nom = $obj->getNom();
         $prenom = $obj->getPrenom();
         $emploi = $obj->getEmploi();
-        $sup = $obj->getSup();
+        $supp = $obj->supp->getNoEmp();
         $embauche = $obj->getEmbauche();
         $sal = $obj->getSal();
         $com = $obj->getCom();
@@ -54,7 +94,7 @@ class EmployeDAO
             $nom,
             $prenom,
             $emploi,
-            $sup,
+            $supp,
             $embauche,
             $sal,
             $com,
@@ -71,12 +111,12 @@ class EmployeDAO
         $nom = $obj->getNom();
         $prenom = $obj->getPrenom();
         $emploi = $obj->getEmploi();
-        $sup = $obj->getSup();
+        $supp = $obj->getSup()->getNoEmp();
         $embauche = $obj->getEmbauche();
         $sal = $obj->getSal();
         $com = $obj->getCom();
-        $noserv = $obj->service->getNoServ();
-        $noproj = $obj->projet->getNoProj();
+        $noserv = $obj->getService()->getNoServ();
+        $noproj = $obj->getProjet()->getNoProj();
         $stmt = $bdd->prepare(" UPDATE EMP2 SET 
     Nom = ?, 
     Prenom = ?, 
@@ -92,7 +132,7 @@ class EmployeDAO
             $nom,
             $prenom,
             $emploi,
-            $sup,
+            $supp,
             $embauche,
             $sal,
             $com,
@@ -116,37 +156,67 @@ class EmployeDAO
         $NextId = $data[0] + 1;
         return $NextId;
     }
-
-    function showDetailById($id)
+    function nomPrenomChef($id)
     {
         $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
-        $stmt = $bdd->prepare("SELECT * from EMP2 as e inner join Serv2 as s inner join proj as p on e.NoServ = s.NoServ and e.NOPROJ = p.NOPROJ where NoEmp =?;");
+        $stmt = $bdd->prepare("SELECT Nom, Prenom FROM EMP2 WHERE NoEmp = ?;");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
         $data = $result->fetch_array(MYSQLI_ASSOC);
-        $Employe = new Employe;
-        $Employe->setNoEmp($data["NoEmp"]);
-        $Employe->setNom($data["Nom"]);
-        $Employe->setPrenom($data["Prenom"]);
-        $Employe->setEmploi($data["Emploi"]);
-        $Employe->setSup($data["Sup"]);
-        $Employe->setEmbauche($data["Embauche"]);
-        $Employe->setSal($data["Sal"]);
-        $Employe->setCom($data["Comm"]);
-        $Employe->service->setNoServ($data["NoServ"]);
-        $Employe->service->setServ($data["Serv"]);
-        $Employe->service->setVille($data["Ville"]);
-        $Employe->projet->setNoProj($data["noproj"]);
-        $Employe->projet->setNomProj($data["nomproj"]);
-        $Employe->projet->setVille($data["budget"]);
-        $Employe->setSaisie($data["Saisie"]);
-        $result->free();
-        $bdd->close();
-        return $Employe;
+        return $data;
     }
 
-    function counter()
+
+    function showDetailById($id)
+    {
+        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $stmt = $bdd->prepare("SELECT e.*, s.*, p.*, e2.NoEmp as NoEmpSup, e2.Nom as NomSup, e2.Prenom as PrenomSup from EMP2 as e left join EMP2 as e2 on e.Sup = e2.NoEmp inner join Serv2 as s on e.NoServ = s.NoServ inner join proj as p on e.NOPROJ = p.NOPROJ where e.NoEmp = ?;");
+
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_array(MYSQLI_ASSOC);
+        // var_dump($data["nomproj"]);
+
+        $employe = new Employe();
+
+        if (!is_null($data["Sup"])) {
+            $supp = new Employe();
+            $supp->setNoEmp($data["NoEmpSup"]);
+            $supp->setNom($data["NomSup"]);
+            $supp->setPrenom($data["PrenomSup"]);
+            $employe->setSup($supp);
+        } else {
+            $employe->setSup(null);
+        }
+
+        $employe->setNoEmp($data["NoEmp"]);
+        $employe->setNom($data["Nom"]);
+        $employe->setPrenom($data["Prenom"]);
+        $employe->setEmploi($data["Emploi"]);
+        $employe->setEmbauche($data["Embauche"]);
+        $employe->setSal($data["Sal"]);
+        $employe->setCom($data["Comm"]);
+        $service = new Service();
+        $service->setNoServ($data["NoServ"]);
+        $service->setServ($data["Serv"]);
+        $service->setVille($data["Ville"]);
+        $employe->setService($service);
+        $projet = new Projet();
+        $projet->setNoProj($data["noproj"]);
+        $projet->setNomProj($data["nomproj"]);
+        $projet->setBudget($data["budget"]);
+        $employe->setProjet($projet);
+        $employe->setSaisie($data["Saisie"]);
+
+        $result->free();
+        $bdd->close();
+        // var_dump($employe);
+        return $employe;
+    }
+
+    function counter(): int
     {
         $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
         $stmt = $bdd->prepare("SELECT COUNT(*) FROM EMP2 WHERE Saisie = DATE_FORMAT(SYSDATE(),'%Y-%m-%d');");
@@ -155,7 +225,7 @@ class EmployeDAO
         $compteur = $compt->fetch_array(MYSQLI_NUM);
         mysqli_free_result($compt);
         $bdd->close();
-        return $compteur;
+        return $compteur[0];
     }
     //service?
     function listChef()
@@ -181,8 +251,8 @@ class EmployeDAO
         foreach ($tabChef as $value) {
             $Sup = new Employe;
             $Sup->setNoEmp($value["NoEmp"]);
-            $Sup->setNoEmp($value["Nom"]);
-            $Sup->setNoEmp($value["Prenom"]);
+            $Sup->setNom($value["Nom"]);
+            $Sup->setPrenom($value["Prenom"]);
             $objChef[] = $Sup;
         }
         $chef->free();

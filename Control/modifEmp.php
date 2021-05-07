@@ -1,4 +1,9 @@
 <?php
+
+include_once(__DIR__ . "/../Service/EmployeService.php");
+include_once(__DIR__ . "/../Service/ServiceService.php");
+include_once(__DIR__ . "/../Service/ProjetService.php");
+
 session_start();
 if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
     header("location: connexion.php");
@@ -30,14 +35,12 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
     $syntaxIdService = "#^[0-9]$#";
     $syntaxIdProj = "#^[0-9]{3}$#";
     $syntaxIdEmp = "#^[0-9]{4}$#";
-
+    $obj = new EmployeService;
 
 
     if (isset($_GET["id"])) {
 
-        $data = showDetailById($_GET["id"]);
-        // var_dump($_POST);
-        // var_dump($_GET);
+        $data = $obj->showDetailById($_GET["id"]);
     }
     if (!empty($_POST)) {
 
@@ -90,7 +93,7 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
         if (!$isThereError) {
 
 
-            UpdateALine($_POSt, $_POST["id"]);
+            $obj->UpdateALine($_POSt, $_POST["id"]);
             header("location:emp.php");
         }
     }
@@ -103,10 +106,18 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
         }
     }
 
+    $objServ = new ServiceService;
+    $tabServ = $objServ->selectAllServ();
+
+
+    $objProj = new ProjetService;
+    $tabProj = $objProj->selectAllProj();
+
+
     ?>
 
     <form action="" method="post" name="formule">
-        <input name="id" value="<?php echo $data["NoEmp"] ?>" hidden>
+        <input name="id" value="<?php echo $data->getNoEmp() ?>" hidden>
         <div class="container position-absolute top-50 start-50 translate-middle">
 
             <div class="row">
@@ -115,43 +126,43 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
 
             <div class="row">
                 <label class="col-sm" for="nom">Nom: </label>
-                <input class="col-sm" id="nom" size="50" maxlength="20" type="text" placeholder="Nom de famille" name="nomPersonne" value="<?php echo $isThereError ? $_POST["nomPersonne"] : $data["Nom"]; ?>" />
+                <input class="col-sm" id="nom" size="50" maxlength="20" type="text" placeholder="Nom de famille" name="nomPersonne" value="<?php echo $isThereError ? $_POST["nomPersonne"] : $data->getNom(); ?>" />
                 <br />
             </div>
 
             <div class="row">
                 <label class="col-sm" for="prenom">Prénom: </label>
-                <input class="col-sm" id="prenom" size="50" maxlength="20" type="text" placeholder="Prénom" name="prenomPersonne" value="<?php echo $isThereError ? $_POST["prenomPersonne"] : $data["Prenom"]; ?>" />
+                <input class="col-sm" id="prenom" size="50" maxlength="20" type="text" placeholder="Prénom" name="prenomPersonne" value="<?php echo $isThereError ? $_POST["prenomPersonne"] : $data->getPrenom(); ?>" />
                 <br />
             </div>
 
             <div class="row">
                 <label class="col-sm" for="emploi">Emploi </label>
-                <input class="col-sm" id="nom" size="50" maxlength="50" type="text" placeholder="Emploi" name="Emploi" value="<?php echo $isThereError ? $_POST["Emploi"] : $data["Emploi"]; ?>" />
+                <input class="col-sm" id="nom" size="50" maxlength="50" type="text" placeholder="Emploi" name="Emploi" value="<?php echo $isThereError ? $_POST["Emploi"] : $data->getEmploi(); ?>" />
                 <br />
             </div>
 
             <div class="row">
                 <label class="col-sm" for="superieur">Supérieur</label>
-                <input class="col-sm" id="superieur" size="50" maxlength="20" type="text" placeholder="Pas de supérieur" name="Superieur" value="<?php echo $isThereError ? $_POST["Superieur"] : $data["Sup"]; ?>" />
+                <input class="col-sm" id="superieur" size="50" maxlength="20" type="text" placeholder="Pas de supérieur" name="Superieur" value="<?php echo $isThereError ? $_POST["Superieur"] : $data->getSup()->getNoEmp(); ?>" />
                 <br />
             </div>
 
             <div class="row">
                 <label class="col-sm" for="embauche">Embauche : </label>
-                <input class="col-sm" id="embauche" size="50" maxlength="50" type="date" placeholder="Date d'embauche" name="Embauche" value="<?php echo $isThereError ? $_POST["Embauche"] : $data["Embauche"]; ?>" />
+                <input class="col-sm" id="embauche" size="50" maxlength="50" type="date" placeholder="Date d'embauche" name="Embauche" value="<?php echo $isThereError ? $_POST["Embauche"] : $data->getEmbauche(); ?>" />
                 <br />
             </div>
 
             <div class="row">
                 <label class="col-sm" for="salaire">Salaire</label>
-                <input class="col-sm" id="salaire" size="50" maxlength="20" type="text" placeholder="Salaire" name="Salaire" value="<?php echo $isThereError ? $_POST["Salaire"] : $data["Sal"]; ?>" />
+                <input class="col-sm" id="salaire" size="50" maxlength="20" type="text" placeholder="Salaire" name="Salaire" value="<?php echo $isThereError ? $_POST["Salaire"] : $data->getSal(); ?>" />
                 <br />
             </div>
 
             <div class="row">
                 <label class="col-sm" for="commission">Commission</label>
-                <input class="col-sm" id="commssion" size="50" maxlength="20" type="text" placeholder="Pas de commission" name="Commission" value="<?php echo $isThereError ? $_POST["Commission"] : $data["Comm"]; ?>" />
+                <input class="col-sm" id="commssion" size="50" maxlength="20" type="text" placeholder="Pas de commission" name="Commission" value="<?php echo $isThereError ? $_POST["Commission"] : $data->getCom(); ?>" />
                 <br />
             </div>
 
@@ -159,17 +170,14 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                 <label class="col-sm" for="service">Service</label>
                 <select class="col-sm" name="IdService">
                     <?php
+                    foreach ($tabServ as $value) {
 
-                    $tabServ = selectAllServ();
-
-
-
-                    for ($i = 0; $i < sizeof($tabServ); $i++) {
                     ?>
-                        <option value="<?php echo $tabServ[$i]["NoServ"]; ?>" <?php if (($isThereError ? $_POST["IdService"] : $data["Serv"]) == $tabServ[$i]["Serv"]) {
-                                                                                    echo "selected";
-                                                                                }
-                                                                                ?>><?php echo $tabServ[$i]["Serv"] ?></option>
+
+                        <option value="<?php echo $value->getNoServ(); ?>" <?php if (($isThereError ? $_POST["IdService"] : $data->getService()->getServ()) == $value->getServ()) {
+                                                                                echo "selected";
+                                                                            }
+                                                                            ?>><?php echo $value->getServ() ?></option>
                     <?php
                     }
                     ?>
@@ -181,14 +189,14 @@ if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
                 <label class="col-sm" for="projet">Projet</label>
                 <select class="col-sm" name="IdProjet">
                     <?php
-                    $tabProj = selectAllProj();
+                    foreach ($tabProj as $value) {
 
-                    for ($i = 0; $i < sizeof($tabProj); $i++) {
                     ?>
-                        <option value="<?php echo $tabProj[$i]["noproj"]; ?>" <?php if (($isThereError ? $_POST["IdProjet"] : $data["NOPROJ"]) == $tabProj[$i]["nomproj"]) {
-                                                                                    echo "selected";
-                                                                                }
-                                                                                ?>><?php echo $tabProj[$i]["nomproj"] ?></option>
+
+                        <option value="<?php echo $value->getNoProj(); ?>" <?php if (($isThereError ? $_POST["IdProjet"] : $data->getProjet()->getNomProj()) == $value->getNomProj()) {
+                                                                                echo "selected";
+                                                                            }
+                                                                            ?>><?php echo $value->getNomProj() ?></option>
                     <?php
                     }
                     ?>

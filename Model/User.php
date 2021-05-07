@@ -2,10 +2,10 @@
 
 class User
 {
-    private $idUser;
-    private $nom;
-    private $mdp;
-    private $profil;
+    protected $idUser;
+    protected $nom;
+    protected $mdp;
+    protected $profil;
 
 
 

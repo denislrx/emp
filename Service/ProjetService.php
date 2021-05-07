@@ -1,6 +1,6 @@
 <?php
 
-include_once("DAO/ProjetDAO");
+include_once(__DIR__ . "/../DAO/ProjetDAO.php");
 
 class ProjetService
 {

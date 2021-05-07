@@ -2,9 +2,9 @@
 
 class Projet
 {
-    private $noProj;
-    private $nomProj;
-    private $budget;
+    protected $noProj;
+    protected $nomProj;
+    protected $budget;
 
 
     /**
