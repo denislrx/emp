@@ -1,12 +1,13 @@
 <?php
 include_once(__DIR__ . "/../Model/Projet.php");
+include_once(__DIR__ . "/ConnexionDAO.php");
 
-class ProjetDAO
+class ProjetDAO extends ConnexionDAO
 {
 
     function selectAllProj()
     {
-        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT * from PROJ;");
         $stmt->execute();
         $result = $stmt->get_result();

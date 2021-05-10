@@ -1,13 +1,14 @@
 <?php
 
 include_once(__DIR__ . "/../Model/User.php");
+include_once(__DIR__ . "/ConnexionDAO.php");
 
-class UserDAO
+class UserDAO extends ConnexionDAO
 {
 
     function searchByName($name)
     {
-        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT * FROM user WHERE Nom = ?;");
         $stmt->bind_param("s", $name);
         $stmt->execute();
@@ -25,7 +26,7 @@ class UserDAO
 
     function NextId()
     {
-        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT Max(IdUser) FROM user");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -39,7 +40,7 @@ class UserDAO
 
     function listeNom()
     {
-        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT DISTINCT Nom from user;");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -49,9 +50,9 @@ class UserDAO
         return  $tabNom;
     }
 
-    function insertion(User $obj)
+    function insertUser(User $obj)
     {
-        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $bdd = $this->connexion();
         $id = $this->NextId();
         $nom = $obj->getNom();
         $mdp = $obj->getMdp();

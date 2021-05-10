@@ -19,12 +19,12 @@ class UserService
     }
 
 
-    public function insertion(User $obj): void
+    public function insertUser(User $obj): void
     {
         $MDPHash = password_hash($obj->getMDP(), PASSWORD_DEFAULT);
         $obj->setMDP($MDPHash);
         $userDAO = new UserDAO;
-        $userDAO->insertion($obj);
+        $userDAO->insertUser($obj);
     }
 
     public function nextId(): int

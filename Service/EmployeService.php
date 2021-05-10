@@ -55,7 +55,12 @@ class EmployeService
     {
         $obj = new EmployeDAO;
         $listChef = $obj->listChef();
-        return $listChef;
+        $tabNoEmpChef = [];
+        foreach ($listChef as $value) {
+            $c = $value["Sup"];
+            $tabNoEmpChef[] = $c;
+        }
+        return $tabNoEmpChef;
     }
 
     public function nextId(): int

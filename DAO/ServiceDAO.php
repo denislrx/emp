@@ -1,18 +1,18 @@
 <?php
 include_once(__DIR__ . "/../Model/Service.php");
+include_once(__DIR__ . "/ConnexionDAO.php");
 
-class ServiceDAO
+class ServiceDAO extends ConnexionDAO
 {
 
     function selectAllServ()
     {
-        $bdd = new mysqli("localhost", "root", "", "personnel_bdd");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT * from Serv2;");
         $stmt->execute();
         $result = $stmt->get_result();
-        $tabServ = $result->fetch_all(MYSQLI_ASSOC);
         $tabObjServ = [];
-        foreach ($tabServ as $value) {
+        foreach ($result->fetch_all(MYSQLI_ASSOC) as $value) {
             $service = new Service;
             $service->setNoServ($value["NoServ"]);
             $service->setServ($value["Serv"]);
