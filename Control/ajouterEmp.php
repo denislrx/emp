@@ -4,6 +4,7 @@ include_once(__DIR__ . "/../Service/ServiceService.php");
 include_once(__DIR__ . "/../Service/ProjetService.php");
 include_once(__DIR__ . "/../Presentation/AjouterModifView.php");
 
+
 session_start();
 
 if (!isset($_SESSION) || empty($_SESSION) || $_SESSION["Profil"] == "user") {
@@ -98,15 +99,27 @@ if (!empty($_POST)) {
         $objPost->setProjet($p);
         $p->setNoProj($_POST["Projet"]);
 
+        try{
         $objService->insertion($objPost);
+        }catch(EmpExceptionService $exc){
+            echo $exc->getMessage();
+        }
+        
 
         header("location: emp.php");
     }
 }
 
 $objServ = new ServiceService;
-$tabServ = $objServ->selectAllServ();
 $objProj = new ProjetService;
-$tabProj = $objProj->selectAllProj();
+try{
+    $tabServ = $objServ->selectAllServ();
+    $tabProj = $objProj->selectAllProj();
+    afficherAjout($isThereError, $tabServ, $tabProj, $messages);
+}catch(ProjExceptionService $exc){
+    echo $exc->getMessage();
+}catch(ServExceptionService $exc){
+    echo $exc->getMessage();
+}
 
-afficherAjout($isThereError, $tabServ, $tabProj, $messages);
+

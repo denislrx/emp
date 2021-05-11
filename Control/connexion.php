@@ -8,8 +8,11 @@ $objUser = new UserService;
 
 if (!empty($_POST)) {
 
-
+try{
     $dataUser = $objUser->searchByName($_POST["Nom"]);
+}catch(UserExceptionService $exc){
+    echo $exc->getMessage();
+}
 
 
     if (password_verify($_POST["MDP"], $dataUser->getMdp())) {
@@ -22,4 +25,7 @@ if (!empty($_POST)) {
         $message = "Identification invalide";
     }
 }
+
 afficherConex($erreur, $message);
+
+

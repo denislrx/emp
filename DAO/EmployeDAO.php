@@ -2,6 +2,9 @@
 
 include_once(__DIR__ . "/../Model/Employe.php");
 include_once(__DIR__ . "/ConnexionDAO.php");
+include_once(__DIR__ . "/../Exception/EmpExceptionDAO.php");
+
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 class EmployeDAO extends ConnexionDAO
 {
@@ -49,7 +52,7 @@ class EmployeDAO extends ConnexionDAO
 
     function selectAll()
     {
-
+        try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT e.*, s.*, p.*,
         e2.NoEmp as NoEmpSup, 
@@ -69,7 +72,12 @@ class EmployeDAO extends ConnexionDAO
         $objDAO = new EmployeDAO;
         $tabEmp = $objDAO->createTabObj($data);
         mysqli_free_result($result);
-        mysqli_close($bdd);
+        mysqli_close($bdd);    
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction selectAll() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
         return $tabEmp;
     }
 
@@ -77,7 +85,7 @@ class EmployeDAO extends ConnexionDAO
 
     function insertion(Employe $obj)
     {
-        $bdd = $this->connexion();
+        
         $id = $this->nextId();
         $nom = $obj->getNom();
         $prenom = $obj->getPrenom();
@@ -88,28 +96,36 @@ class EmployeDAO extends ConnexionDAO
         $com = $obj->getCom();
         $noserv = $obj->getService()->getNoServ();
         $noproj = $obj->getProjet()->getNoProj();
-        $stmt = $bdd->prepare(" INSERT INTO EMP2(NoEmp, Nom, Prenom, Emploi, Sup, Embauche, Sal, Comm, NoServ, noproj) 
-    VALUES(?,?,?,?,?,?,?,?,?,?);");
-        $stmt->bind_param(
-            "isssisddii",
-            $id,
-            $nom,
-            $prenom,
-            $emploi,
-            $superieur,
-            $embauche,
-            $sal,
-            $com,
-            $noserv,
-            $noproj,
-        );
-        $stmt->execute();
-        $bdd->close();
+
+        try{
+            $bdd = $this->connexion();
+            $stmt = $bdd->prepare(" INSERT INTO EMP2(NoEmp, Nom, Prenom, Emploi, Sup, Embauche, Sal, Comm, NoServ, noproj) 
+        VALUES(?,?,?,?,?,?,?,?,?,?);");
+            $stmt->bind_param(
+                "isssisddii",
+                $id,
+                $nom,
+                $prenom,
+                $emploi,
+                $superieur,
+                $embauche,
+                $sal,
+                $com,
+                $noserv,
+                $noproj,
+            );
+            $stmt->execute();
+            $bdd->close();
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction insertion() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
     }
 
-    function UpdateALine(Employe $obj, int $id)
+    function updateALine(Employe $obj, int $id)
     {
-        $bdd = $this->connexion();
+        
         $nom = $obj->getNom();
         $prenom = $obj->getPrenom();
         $emploi = $obj->getEmploi();
@@ -119,6 +135,8 @@ class EmployeDAO extends ConnexionDAO
         $com = $obj->getCom();
         $noserv = $obj->getService()->getNoServ();
         $noproj = $obj->getProjet()->getNoProj();
+    try{
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare(" UPDATE EMP2 SET 
     Nom = ?, 
     Prenom = ?, 
@@ -144,10 +162,16 @@ class EmployeDAO extends ConnexionDAO
         );
         $stmt->execute();
         mysqli_close($bdd);
+    }catch(mysqli_sql_exception $exc){
+        $message = "La fonction UpdateALine() ne marche pas";
+        throw new EmpExceptionDAO($message, $exc->getCode());
+    }
+        
     }
 
     function nextId()
     {
+        try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT Max(NoEmp) FROM EMP2;");
         $stmt->execute();
@@ -155,31 +179,48 @@ class EmployeDAO extends ConnexionDAO
         $data = $result->fetch_array(MYSQLI_NUM);
         $result->free();
         $bdd->close();
-        $NextId = $data[0] + 1;
+        $NextId = $data[0] + 1;    
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction nextId() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
         return $NextId;
     }
     function nomPrenomChef($id)
     {
+        try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT Nom, Prenom FROM EMP2 WHERE NoEmp = ?;");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
-        $data = $result->fetch_array(MYSQLI_ASSOC);
+        $data = $result->fetch_array(MYSQLI_ASSOC);    
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction nomPrenomChef() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
         return $data;
     }
 
 
     function showDetailById($id)
     {
+        try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT e.*, s.*, p.*, e2.NoEmp as NoEmpSup, e2.Nom as NomSup, e2.Prenom as PrenomSup from EMP2 as e left join EMP2 as e2 on e.Sup = e2.NoEmp inner join Serv2 as s on e.NoServ = s.NoServ inner join proj as p on e.NOPROJ = p.NOPROJ where e.NoEmp = ?;");
-
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
         $data = $result->fetch_array(MYSQLI_ASSOC);
-        // var_dump($data["nomproj"]);
+        $result->free();
+        $bdd->close();
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction showDetailById() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
 
         $e = new Employe();
 
@@ -212,43 +253,60 @@ class EmployeDAO extends ConnexionDAO
         $e->setProjet($p);
         $e->setSaisie($data["Saisie"]);
 
-        $result->free();
-        $bdd->close();
-        // var_dump($e);
+
         return $e;
     }
 
     function counter(): int
     {
+        try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT COUNT(*) FROM EMP2 WHERE Saisie = DATE_FORMAT(SYSDATE(),'%Y-%m-%d');");
         $stmt->execute();
         $compt = $stmt->get_result();
         $compteur = $compt->fetch_array(MYSQLI_NUM);
         mysqli_free_result($compt);
-        $bdd->close();
+        $bdd->close();    
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction counter() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
         return $compteur[0];
     }
     //service?
     function listChef(): array
     {
+        try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT DISTINCT Sup FROM EMP2;");
         $stmt->execute();
         $a = $stmt->get_result();
         $tabNoEmpChef = $a->fetch_all(MYSQLI_ASSOC);
         $a->free();
-        $bdd->close();
+        $bdd->close();    
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction listChef() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
         return $tabNoEmpChef;
     }
 
     function detailChef(): array
-    {
+    {   try{
         $bdd = $this->connexion();
         $stmt = $bdd->prepare(" SELECT NoEmp, Nom, Prenom FROM EMP2 WHERE NoEmp IN (SELECT DISTINCT Sup FROM EMP2);");
         $stmt->execute();
         $chef = $stmt->get_result();
         $tabChef = $chef->fetch_all(MYSQLI_ASSOC);
+        $chef->free();
+        $bdd->close(); 
+    }catch(mysqli_sql_exception $exc){
+        $message = "La fonction detailChef() ne marche pas";
+        throw new EmpExceptionDAO($message, $exc->getCode());
+    }
+        
         $objChef = [];
         foreach ($tabChef as $value) {
             $Sup = new Employe;
@@ -257,18 +315,23 @@ class EmployeDAO extends ConnexionDAO
             $Sup->setPrenom($value["Prenom"]);
             $objChef[] = $Sup;
         }
-        $chef->free();
-        $bdd->close();
+        
         return $objChef;
     }
 
     function deleteLine(int $id)
     {
 
-        $bdd = $this->connexion();
-        $stmt = $bdd->prepare("DELETE FROM  emp2 WHERE NoEmp =?;");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $bdd->close();
+        try{
+            $bdd = $this->connexion();
+            $stmt = $bdd->prepare("DELETE FROM  emp2 WHERE NoEmp =?;");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $bdd->close();
+        }catch(mysqli_sql_exception $exc){
+            $message = "La fonction deleteLine() ne marche pas";
+            throw new EmpExceptionDAO($message, $exc->getCode());
+        }
+        
     }
 }

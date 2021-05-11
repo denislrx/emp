@@ -8,15 +8,22 @@ $messageErreur = [];
 $objUser = new UserService;
 if (!empty($_POST)) {
 
-
-    $NextId = $objUser->nextId();
-
+try{
+  $NextId = $objUser->nextId();  
+}catch(UserExceptionService $exc){
+    echo $exc->getMessage();
+}
+    
     if (!isset($_POST["Nom"]) || empty($_POST["Nom"])) {
         $erreur = true;
         $messageErreur[] = "Erreur de saisie du mot de passe ";
     } else {
 
+        try{
         $tabNom = $objUser->listeNom();
+        }catch(UserExceptionService $exc){
+            echo $exc->getMessage();
+        }
         foreach ($tabNom as $nom) {
             if ($_POST["Nom"] == $nom) {
                 $erreur = true;
@@ -47,7 +54,12 @@ if (!empty($_POST)) {
         $objProfil = new User;
         $objProfil->setNom($_POST["Nom"]);
         $objProfil->setMDP($_POST["MDP1"]);
-        $objUser->insertUser($objProfil);
+        try{
+        $objUser->insertUser($objProfil);    
+        }catch(UserExceptionService $exc){
+            echo $exc->getMessage();
+        }
+        
         header("location:connexion.php");
     }
 }

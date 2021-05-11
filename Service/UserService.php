@@ -1,5 +1,6 @@
 <?php
 include_once(__DIR__ . "/../DAO/UserDAO.php");
+include_once(__DIR__ . "/../Exception/UserExceptionService.php");
 
 class UserService
 {
@@ -7,14 +8,24 @@ class UserService
     public function searchByName($name): User
     {
         $UserDAO = new UserDAO;
-        $User = $UserDAO->searchByName($name);
+        try{
+            $User = $UserDAO->searchByName($name);
+        }catch(UserExceptionDAO $exc){
+            throw new UserExceptionService($exc->getMessage());
+        }
+        
         return $User;
     }
 
     public function listeNom(): array
     {
         $UserDAO = new UserDAO;
-        $User = $UserDAO->listeNom();
+        try{
+            $User = $UserDAO->listeNom();
+        }catch(UserExceptionDAO $exc){
+            throw new UserExceptionService($exc->getMessage());
+        }
+        
         return $User;
     }
 
@@ -24,13 +35,23 @@ class UserService
         $MDPHash = password_hash($obj->getMDP(), PASSWORD_DEFAULT);
         $obj->setMDP($MDPHash);
         $userDAO = new UserDAO;
-        $userDAO->insertUser($obj);
+        try{
+            $userDAO->insertUser($obj);
+        }catch(UserExceptionDAO $exc){
+            throw new UserExceptionService($exc->getMessage());
+        }
+
     }
 
     public function nextId(): int
     {
         $obj = new UserDAO;
-        $nextId = $obj->NextId();
+        try{
+            $nextId = $obj->nextId();
+        }catch(UserExceptionDAO $exc){
+            throw new UserExceptionService($exc->getMessage());
+        }
+        
         return $nextId;
     }
 }

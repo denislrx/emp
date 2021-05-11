@@ -93,3 +93,71 @@ function viewTableau($compteur, $profil, $objSelectAll, $tabNoEmpChef)
 <?php
 
 }
+
+
+function affichDetail($data){
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <?php
+    viewHead();
+    viewLineDetail($data)
+    ?>
+    </html>
+    <?php
+}
+
+function viewLineDetail($data)
+{
+    ?>
+    <body>
+    <div class="container ">
+        <div class="truc">
+            <div class="row">
+                <table>
+                    <td> ID EMPLOYES </td>
+                    <td> NOM </td>
+                    <td> PRENOM </td>
+                    <td> EMPLOI </td>
+                    <td> SUPERIEUR</td>
+                    <td> EMBAUCHE </td>
+                    <td> SALAIRE </td>
+                    <td> COMMISSION </td>
+                    <td> SERVICE </td>
+                    <td> LIEU </td>
+                    <td> PROJET </td>
+                    <td> BUDGET </td>
+                    <?php
+                    if ($data->getSup() == null) {
+                        $sup = "";
+                    } else {
+                        $sup = $data->getSup()->getNom() . " " .  $data->getSup()->getPrenom();
+                    }
+                    ?>
+                    <tr>
+
+                        <td> <?php echo $data->getNoEmp() ?></td>
+                        <td> <?php echo $data->getNom() ?></td>
+                        <td> <?php echo $data->getPrenom() ?></td>
+                        <td> <?php echo $data->getEmploi() ?></td>
+                        <td> <?php echo $sup ?></td>
+                        <td> <?php echo $data->getEmbauche() ?></td>
+                        <td> <?php echo $data->getSal() ?></td>
+                        <td> <?php echo $data->getCom() ?></td>
+                        <td> <?php echo $data->getService()->getServ() ?></td>
+                        <td> <?php echo $data->getService()->getVille() ?></td>
+                        <td> <?php echo $data->getProjet()->getNomProj() ?></td>
+                        <td> <?php echo $data->getProjet()->getBudget() ?></td>
+
+                    </tr>
+                </table>
+            </div>
+            <div class="row">
+                <a href='Emp.php'> <button class="btn btn-dark"> Retour au registre </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+<?php
+}

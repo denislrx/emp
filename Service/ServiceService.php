@@ -1,6 +1,7 @@
 <?php
 
 include_once(__DIR__ . "/../DAO/ServiceDAO.php");
+include_once(__DIR__ . "/../Exception/ServExceptionService.php");
 
 class ServiceService
 {
@@ -8,7 +9,12 @@ class ServiceService
     public function selectAllServ(): array
     {
         $ServiceDAO = new ServiceDAO;
-        $Service = $ServiceDAO->selectAllServ();
+    try{
+    $Service = $ServiceDAO->selectAllServ(); 
+    }catch(ServExceptionDAO $exc){
+        throw new ServExceptionService($exc->getMessage());
+    }
+     
         return $Service;
     }
 }

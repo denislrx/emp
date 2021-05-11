@@ -77,19 +77,26 @@ if (!empty($_POST)) {
 
     if (!$isThereError) {
 
-
-        $obj->UpdateALine($_POSt, $_POST["id"]);
+        try{
+        $obj->updateALine($_POSt, $_POST["id"]);
+        }catch(EmpExceptionService $exc){
+            echo $exc->getMessage();
+        }
         header("location:emp.php");
     }
 }
 
 
 $objServ = new ServiceService;
-$tabServ = $objServ->selectAllServ();
-
-
 $objProj = new ProjetService;
+try{
 $tabProj = $objProj->selectAllProj();
+$tabServ = $objServ->selectAllServ();    
+}catch(ProjExceptionService $exc){
+    echo $exc->getMessage();
+}catch(ServExceptionService $exc){
+    echo $exc->getMessage();
+}
 
 
 AfficherModif($isThereError, $messages, $data, $tabServ, $tabProj);
